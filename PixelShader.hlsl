@@ -93,19 +93,21 @@ float4 PS (PixelInputType input):SV_TARGET
 		return ambient;
 	}
 
-	if (lightDepthValue <= depthValue)
+	if (lightDepthValue > depthValue)
 	{
-		//Diffuse
-		diffuseFactor = saturate(max(dot(normal.xyz, -lightDir), 0.0f));
-
-		diffuse = diffuseFactor * diffuseColor * color;
-
-		//Specular
-		reflection = reflect(normal.xyz, lightDir);
-		specularFactor = pow(saturate(dot(reflection, viewDir)), 32.0f);
-
-		specular = specularFactor * specularColor * color; 
+		return float4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
+
+	//Diffuse
+	diffuseFactor = saturate(max(dot(normal.xyz, -lightDir), 0.0f));
+
+	diffuse = diffuseFactor * diffuseColor * color;
+
+	//Specular
+	reflection = reflect(normal.xyz, lightDir);
+	specularFactor = pow(saturate(dot(reflection, viewDir)), 32.0f);
+
+	specular = specularFactor * specularColor * color; 
 
 	//Output final pixelColor
 	finalColor = saturate(ambient + diffuse + specular);
