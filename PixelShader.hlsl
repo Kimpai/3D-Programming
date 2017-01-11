@@ -22,8 +22,7 @@ cbuffer CameraBuffer
 
 cbuffer LightPositionBuffer
 {
-	float3 lightPosition;
-	float padding1;
+	float4 lightPosition;
 };
 
 struct PixelInputType
@@ -91,11 +90,6 @@ float4 PS (PixelInputType input):SV_TARGET
 	if (d > 300.0f)
 	{
 		return ambient;
-	}
-
-	if (lightDepthValue > depthValue)
-	{
-		return float4(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
 	//Diffuse

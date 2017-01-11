@@ -13,6 +13,8 @@
 #include "simpleshaderclss.h"
 #include "inputclass.h"
 #include "depthMap.h"
+#include "particleshaderclass.h"
+#include "Particlesystemclass.h"
 
 //GLOBALS//
 const bool FULL_SCREEN = false;
@@ -48,5 +50,7 @@ private:
 	DeferredShaderClass* m_DeferredShader;
 	OrthoWindowClass* m_FullScreenWindow;
 	SimpleShaderClass* m_SimpleShader;
+	ParticleShaderClass* m_ParticleShader;
+	ParticleSystemClass* m_ParticleSystem;
 	bool m_cellLines, m_heightLocked;
 };

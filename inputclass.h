@@ -19,6 +19,10 @@ public:
 	bool IsEscapePressed();
 	bool IsLeftPressed();
 	bool IsUpPressed();
+	bool TurnUp();
+	bool TurnDown();
+	bool TurnRight();
+	bool TurnLeft();
 	bool IsDownPressed();
 	bool IsRightPressed();
 	void HandelInput(float, float&, float&, float&, float&, float&, float&);

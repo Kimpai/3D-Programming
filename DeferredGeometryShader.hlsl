@@ -46,11 +46,11 @@ void DGS ( triangle GeometryInputType input[3], inout TriangleStream<PixelInputT
 		output.worldPosition = input[i].worldPosition;
 		output.lightViewPosition = input[i].lightViewPosition;
 
-		//if (faceNormal.z < 0.0f || faceNormal.y > 0.0f)
-		//{
+		if (faceNormal.z < 0.0f || faceNormal.y > 0.0f)
+		{
 
-		OutputStream.Append( output );
-		//}
+			OutputStream.Append( output );
+		}
     }
 	
     OutputStream.RestartStrip();

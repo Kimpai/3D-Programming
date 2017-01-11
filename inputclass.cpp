@@ -305,6 +305,18 @@ void InputClass::HandelInput(float frameTime, float& posX, float& posY, float& p
 	keydown = IsDownPressed();
 	m_position->MoveBackward(keydown);
 
+	keydown = TurnUp();
+	m_position->TurnUpward(keydown);
+
+	keydown = TurnDown();
+	m_position->TurnDownward(keydown);
+
+	keydown = TurnRight();
+	m_position->TurnRight(keydown);
+
+	keydown = TurnLeft();
+	m_position->TurnLeft(keydown);
+
 	//Get the view point position/rotation
 	m_position->GetPosition(posX, posY, posZ);
 	m_position->GetRotation(rotX, rotY, rotZ);
@@ -326,6 +338,46 @@ bool InputClass::IsDownPressed()
 bool InputClass::IsUpPressed()
 {
 	if (m_keyboardState[DIK_W] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::TurnUp()
+{
+	if (m_keyboardState[DIK_UP] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::TurnDown()
+{
+	if (m_keyboardState[DIK_DOWN] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::TurnRight()
+{
+	if (m_keyboardState[DIK_RIGHT] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::TurnLeft()
+{
+	if (m_keyboardState[DIK_LEFT] & 0x80)
 	{
 		return true;
 	}

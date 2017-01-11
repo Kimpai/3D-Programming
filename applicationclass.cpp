@@ -11,6 +11,8 @@ ApplicationClass::ApplicationClass()
 	m_TextureManager = nullptr;
 	m_SimpleShader = nullptr;
 	m_DepthMap = nullptr;
+	m_ParticleShader = nullptr;
+	m_ParticleSystem = nullptr;
 }
 
 ApplicationClass::ApplicationClass(const ApplicationClass& other)
@@ -87,6 +89,12 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	result = m_TextureManager->LoadTexture(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), L"stone01n.dds", 3);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = m_TextureManager->LoadTexture(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), L"fire01.dds", 4);
 	if (!result)
 	{
 		return false;
@@ -201,6 +209,31 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_ParticleShader = new ParticleShaderClass;
+	if (!m_ParticleShader)
+	{
+		return false;
+	}
+
+	result = m_ParticleShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the particle shader object", L"Error", MB_OK);
+		return false;
+	}
+
+	m_ParticleSystem = new ParticleSystemClass;
+	if (!m_ParticleSystem)
+	{
+		return false;
+	}
+
+	result = m_ParticleSystem->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
 	//Create the light object
 	m_Light = new LightClass;
 	if (!m_Light)
@@ -221,6 +254,18 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void ApplicationClass::Shutdown()
 {
+	if (m_ParticleSystem)
+	{
+		m_ParticleSystem->Shutdown();
+		delete m_ParticleSystem;
+		m_ParticleSystem = nullptr;
+	}
+	if (m_ParticleShader)
+	{
+		m_ParticleShader->Shutdown();
+		delete m_ParticleShader;
+		m_ParticleShader = nullptr;
+	}
 	if (m_D3D)
 	{
 		m_D3D->Shutdown();
@@ -319,6 +364,8 @@ bool ApplicationClass::Frame(InputClass* Input, float frameTime, float posX, flo
 	//Generate the view matrix based on the camera's position and update it every frame
 	m_Camera->Render();
 
+	m_ParticleSystem->Frame(frameTime, m_D3D->GetDeviceContext());
+
 	//Render the scene
 	result = Render();
 	if (!result)
@@ -376,13 +423,9 @@ bool ApplicationClass::RenderSceneToQaud()
 {
 	bool result;
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
-
-	//Render the depth from the lights point of view
-	result = RenderDepth();
-	if (!result)
-	{
-		return false;
-	}
+	XMFLOAT3 cameraPosition, particlePosition;
+	double angle;
+	float rotation;
 
 	//Set the render buffers to be the render target
 	m_DeferredBuffers->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -431,6 +474,31 @@ bool ApplicationClass::RenderSceneToQaud()
 
 	result = m_DeferredShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
 		m_TextureManager->GetTexture(2), m_TextureManager->GetTexture(3), lightViewMatrix, lightProjectionMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	//Reset the matrices
+	m_D3D->GetWorldMatrix(worldMatrix);
+	m_Camera->GetViewMatrix(viewMatrix);
+	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	cameraPosition = m_Camera->GetPosition();
+
+	particlePosition.x = 0.0f;
+	particlePosition.y = 1.5f;
+	particlePosition.z = 0.0f;
+
+	angle = atan2(particlePosition.x - cameraPosition.x, particlePosition.z - cameraPosition.z) * (180.0 / XM_PI);
+
+	rotation = (float)angle * 0.0174532925f;
+
+	worldMatrix = (XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixRotationY(rotation) * XMMatrixTranslation(particlePosition.x, particlePosition.y, particlePosition.z));
+
+	m_ParticleSystem->Render(m_D3D->GetDeviceContext());
+
+	result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_TextureManager->GetTexture(4));
 	if (!result)
 	{
 		return false;

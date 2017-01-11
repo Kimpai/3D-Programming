@@ -85,6 +85,8 @@
     <ClCompile Include="deferredbuffersclass.cpp" />
     <ClCompile Include="deferredshaderclass.cpp" />
     <ClCompile Include="depthMap.cpp" />
+    <ClCompile Include="particleshaderclass.cpp" />
+    <ClCompile Include="Particlesystemclass.cpp" />
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="simpleshaderclass.cpp" />
     <ClCompile Include="applicationclass.cpp" />
@@ -107,6 +109,8 @@
     <ClInclude Include="deferredbuffersclass.h" />
     <ClInclude Include="deferredshaderclass.h" />
     <ClInclude Include="depthMap.h" />
+    <ClInclude Include="particleshaderclass.h" />
+    <ClInclude Include="Particlesystemclass.h" />
     <ClInclude Include="positionclass.h" />
     <ClInclude Include="simpleshaderclss.h" />
     <ClInclude Include="applicationclass.h" />
@@ -142,6 +146,22 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="ParticlePixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="ParticleVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">main</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">main</EntryPointName>
     </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
