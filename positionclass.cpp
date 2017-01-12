@@ -16,6 +16,8 @@ PositionClass::PositionClass()
 	m_backwardSpeed = 0.0f;
 	m_rightSpeed = 0.0f;
 	m_leftSpeed = 0.0f;
+	m_upwardSpeed = 0.0f;
+	m_downwardSpeed = 0.0f;
 	m_leftTurnSpeed = 0.0f;
 	m_rightTurnSpeed = 0.0f;
 	m_lookUpSpeed = 0.0f;
@@ -93,6 +95,7 @@ void PositionClass::MoveForward(bool keydown)
 
 	//Update the position
 	m_positionZ += cosf(radians) * m_forwardSpeed;
+	m_positionX += sinf(radians) * m_forwardSpeed;
 }
 
 void PositionClass::MoveBackward(bool keydown)
@@ -121,16 +124,65 @@ void PositionClass::MoveBackward(bool keydown)
 	radians = m_rotationY * 0.0174532925f;
 
 	m_positionZ -= cosf(radians) * m_backwardSpeed;
+	m_positionX -= sinf(radians) * m_backwardSpeed;
 }
 
-void PositionClass::MoveRight(bool keydown)
+void PositionClass::MoveUpward(bool keydown)
+{
+	if (keydown)
+	{
+		m_upwardSpeed += (m_frameTime * 0.15f);
+
+		if (m_upwardSpeed > (m_frameTime * 0.15f))
+		{
+			m_upwardSpeed = m_frameTime + 0.15f;
+		}
+	}
+	else
+	{
+		m_upwardSpeed -= m_frameTime * 0.5f;
+
+		if (m_upwardSpeed < 0.0f)
+		{
+			m_upwardSpeed = 0.0f;
+		}
+	}
+
+	m_positionY += m_upwardSpeed;
+}
+
+void PositionClass::MoveDownward(bool keydown)
+{
+	if (keydown)
+	{
+		m_downwardSpeed += (m_frameTime * 0.15f);
+
+		if (m_downwardSpeed > (m_frameTime * 0.15f))
+		{
+			m_upwardSpeed = m_frameTime + 0.15f;
+		}
+	}
+	else
+	{
+		m_upwardSpeed -= m_frameTime * 0.5f;
+
+		if (m_downwardSpeed < 0.0f)
+		{
+			m_downwardSpeed = 0.0f;
+		}
+	}
+
+	m_positionY -= m_downwardSpeed;
+}
+
+void PositionClass::StrafeRight(bool keydown)
 {
 	float radians;
 
+	//Update the forward speed movement based on the frame time and whether the user is holding the key down or not
 	if (keydown)
 	{
 		m_rightSpeed += (m_frameTime * 0.15f);
-
 		if (m_rightSpeed > (m_frameTime * 0.15f))
 		{
 			m_rightSpeed = (m_frameTime * 0.15f);
@@ -146,12 +198,14 @@ void PositionClass::MoveRight(bool keydown)
 		}
 	}
 
+	//Convert degrees to radians
 	radians = m_rotationY * 0.0174532925f;
 
-	m_positionX += cosf(radians) * m_rightSpeed;
+	//Update the position
+	m_positionX += sinf(radians) * m_rightSpeed;
 }
 
-void PositionClass::MoveLeft(bool keydown)
+void PositionClass::StrafeLeft(bool keydown)
 {
 	float radians;
 
@@ -176,7 +230,7 @@ void PositionClass::MoveLeft(bool keydown)
 
 	radians = m_rotationY * 0.0174532925f;
 
-	m_positionX -= cosf(radians) * m_leftSpeed;
+	m_positionX -= sinf(radians) * m_leftSpeed;
 }
 
 void PositionClass::TurnLeft(bool keydown)

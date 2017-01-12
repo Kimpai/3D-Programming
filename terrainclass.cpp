@@ -895,7 +895,7 @@ void TerrainClass::CalculateTangentBinormal(TempVertexType vertex1, TempVertexTy
 
 bool TerrainClass::LoadTerrainCells(ID3D11Device* device)
 {
-	int cellHeight, cellWidth, cellRowCount, index;
+	int cellHeight, cellWidth, cellRowCount, index, i, j;
 	bool result;
 
 	//Set the height and width of each cell to fixed 33x33 vertex array
@@ -914,9 +914,9 @@ bool TerrainClass::LoadTerrainCells(ID3D11Device* device)
 	}
 
 	//Loop through and itialize all the terrain cells
-	for (int i = 0; i < cellRowCount; i++)
+	for (i = 0; i < cellRowCount; i++)
 	{
-		for (int j = 0; j < cellRowCount; j++)
+		for (j = 0; j < cellRowCount; j++)
 		{
 			index = (cellRowCount * i) + j;
 

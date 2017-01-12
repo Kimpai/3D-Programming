@@ -87,13 +87,8 @@ float4 PS (PixelInputType input):SV_TARGET
 	//Normalize the view direction vector
 	viewDir = normalize(viewDir);
 
-	if (d > 300.0f)
-	{
-		return ambient;
-	}
-
 	//Diffuse
-	diffuseFactor = saturate(max(dot(normal.xyz, -lightDir), 0.0f));
+	diffuseFactor = saturate(dot(normal.xyz, -lightDir));
 
 	diffuse = diffuseFactor * diffuseColor * color;
 

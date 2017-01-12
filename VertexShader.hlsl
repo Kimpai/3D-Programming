@@ -5,6 +5,12 @@ cbuffer MatrixBuffer
 	matrix projectionMatrix;
 };
 
+cbuffer cameraBuffer
+{
+	float3 cameraPosition;
+	float padding;
+};
+
 struct VertexInputType
 {
 	float4 position:POSITION;

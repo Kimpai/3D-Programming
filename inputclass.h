@@ -19,6 +19,8 @@ public:
 	bool IsEscapePressed();
 	bool IsLeftPressed();
 	bool IsUpPressed();
+	bool IsZPressed();
+	bool IsXPressed();
 	bool TurnUp();
 	bool TurnDown();
 	bool TurnRight();

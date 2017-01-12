@@ -293,17 +293,23 @@ void InputClass::HandelInput(float frameTime, float& posX, float& posY, float& p
 	m_position->SetFrameTime(frameTime);
 
 	//Handle the input
-	keydown = IsLeftPressed();
-	m_position->MoveLeft(keydown);
-
-	keydown = IsRightPressed();
-	m_position->MoveRight(keydown);
-
 	keydown = IsUpPressed();
 	m_position->MoveForward(keydown);
 
 	keydown = IsDownPressed();
 	m_position->MoveBackward(keydown);
+
+	keydown = IsZPressed();
+	m_position->MoveUpward(keydown);
+
+	keydown = IsXPressed();
+	m_position->MoveDownward(keydown);
+
+	keydown = IsRightPressed();
+	m_position->StrafeRight(keydown);
+
+	keydown = IsLeftPressed();
+	m_position->StrafeLeft(keydown);
 
 	keydown = TurnUp();
 	m_position->TurnUpward(keydown);
@@ -338,6 +344,26 @@ bool InputClass::IsDownPressed()
 bool InputClass::IsUpPressed()
 {
 	if (m_keyboardState[DIK_W] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsZPressed()
+{
+	if (m_keyboardState[DIK_Z] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool InputClass::IsXPressed()
+{
+	if (m_keyboardState[DIK_X] & 0x80)
 	{
 		return true;
 	}

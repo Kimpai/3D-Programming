@@ -244,7 +244,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->Initialize(SCREEN_DEPTH, SCREEN_NEAR, screenHeight, screenWidth);
 
 	//Set the rendering of cell lines to enabled
-	m_cellLines = false;
+	m_cellLines = true;
 
 	//Set the user locked to the terrain height for movement
 	m_heightLocked = true;
@@ -356,8 +356,8 @@ bool ApplicationClass::Frame(InputClass* Input, float frameTime, float posX, flo
 		if (foundHeight)
 		{
 			//If there was a triangle beneath the camera then position the camera just abouve it by on meter
-			Input->UpdatePosition(posX, height + 1.0f, posZ);
-			m_Camera->SetPosition(posX, height + 1.0f, posZ);
+			Input->UpdatePosition(posX, height + 0.01, posZ);
+			m_Camera->SetPosition(posX, height + 0.01, posZ);
 		}
 	}
 
@@ -443,7 +443,7 @@ bool ApplicationClass::RenderSceneToQaud()
 		m_Light->GetProjectionMatrix(lightProjectionMatrix);
 
 		//Render terrain object
-		worldMatrix = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(0.0f, -20.0f, 0.0f);
+		worldMatrix = XMMatrixScaling(1.0, 1.0, 1.0) * XMMatrixTranslation(0.0f, -20.0f, 0.0);
 
 		result = m_Terrain->RenderCell(m_D3D->GetDeviceContext(), i);
 		if (!result)
@@ -468,7 +468,7 @@ bool ApplicationClass::RenderSceneToQaud()
 	m_Light->GetProjectionMatrix(lightProjectionMatrix);
 
 	//Render model object
-	worldMatrix = (XMMatrixScaling(50.0f, 50.0f, 50.0f) * XMMatrixTranslation(500.0f, 20.0f, 500.0f));
+	worldMatrix = (XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(50.0f, -10.0f, 50.0f));
 
 	m_Model->Render(m_D3D->GetDeviceContext());
 
@@ -494,7 +494,7 @@ bool ApplicationClass::RenderSceneToQaud()
 
 	rotation = (float)angle * 0.0174532925f;
 
-	worldMatrix = (XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixRotationY(rotation) * XMMatrixTranslation(particlePosition.x, particlePosition.y, particlePosition.z));
+	worldMatrix = (XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixRotationY(rotation) * XMMatrixTranslation(particlePosition.x, particlePosition.y, particlePosition.z));
 
 	m_ParticleSystem->Render(m_D3D->GetDeviceContext());
 
@@ -525,7 +525,7 @@ bool ApplicationClass::RenderDepth()
 	m_DepthMap->ClearRenderTarget(m_D3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
 
 	//Render the terrain object
-	worldMatrix = XMMatrixScaling(10.0f, 10.0f, 10.0f) * XMMatrixTranslation(0.0f, -20.0f, 0.0f);
+	worldMatrix = XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(0.0, -20.0, 0.0);
 
 	for (int i = 0; i < m_Terrain->GetCellCount(); i++)
 	{
@@ -553,7 +553,7 @@ bool ApplicationClass::RenderDepth()
 	m_Light->GetProjectionMatrix(projectionMatrix);
 
 	//Render the model object
-	worldMatrix = (XMMatrixScaling(50.0f, 50.0f, 50.0f) * XMMatrixTranslation(500.0f, 20.0f, 500.0f));
+	worldMatrix = (XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(50.0f, -10.0f, 50.0f));
 
 	m_Model->Render(m_D3D->GetDeviceContext());
 

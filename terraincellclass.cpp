@@ -361,7 +361,7 @@ bool TerrainCellClass::BuildLineBuffers(ID3D11Device* device)
 	//Load the vertex and index array with data.
 	index = 0;
 
-	//8 Horizontal lines.
+	// 8 Horizontal lines.
 	vertices[index].position = XMFLOAT3(m_minWidth, m_minHeight, m_minDepth);
 	vertices[index].color = lineColor;
 	indices[index] = index;
@@ -442,7 +442,7 @@ bool TerrainCellClass::BuildLineBuffers(ID3D11Device* device)
 	indices[index] = index;
 	index++;
 
-	//4 Verticle lines.
+	// 4 Verticle lines.
 	vertices[index].position = XMFLOAT3(m_maxWidth, m_maxHeight, m_maxDepth);
 	vertices[index].color = lineColor;
 	indices[index] = index;
@@ -481,6 +481,7 @@ bool TerrainCellClass::BuildLineBuffers(ID3D11Device* device)
 	vertices[index].position = XMFLOAT3(m_minWidth, m_minHeight, m_minDepth);
 	vertices[index].color = lineColor;
 	indices[index] = index;
+
 
 	//Create the vertex buffer.
 	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_lineVertexBuffer);
