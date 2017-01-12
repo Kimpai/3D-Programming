@@ -38,7 +38,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	}
 
-	m_position->SetPosition(0.0f, 1.0f, -5.0f);
+	m_position->SetPosition(0.0f, 0.0f, -5.0f);
 	m_position->SetRotation(0.0f, 0.0f, 0.0f);
 
 	//Intialize the main direct input interface

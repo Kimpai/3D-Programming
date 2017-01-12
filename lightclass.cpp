@@ -23,8 +23,8 @@ void LightClass::Initialize(float screenDepth, float screenNear, int screenHeigh
 	//Initialize color and poition
 	m_diffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	m_ambientColor = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_position = XMFLOAT3(50.0f, 20.0f, 40.0f);
-	m_lookAt = XMFLOAT3(50.0f, 0.0f, 50.0f);
+	m_position = XMFLOAT3(50.0f, 1.0f, 40.0f);
+	m_lookAt = XMFLOAT3(50.0f, 1.0f, 50.0f);
 	m_specularColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 
 	//Setup the projection matrix

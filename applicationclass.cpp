@@ -425,7 +425,6 @@ bool ApplicationClass::RenderSceneToQaud()
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
 	XMFLOAT3 cameraPosition, particlePosition;
 	double angle;
-	float rotation;
 
 	//Set the render buffers to be the render target
 	m_DeferredBuffers->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -443,7 +442,7 @@ bool ApplicationClass::RenderSceneToQaud()
 		m_Light->GetProjectionMatrix(lightProjectionMatrix);
 
 		//Render terrain object
-		worldMatrix = XMMatrixScaling(1.0, 1.0, 1.0) * XMMatrixTranslation(0.0f, -20.0f, 0.0);
+		worldMatrix = XMMatrixScaling(1.0, 1.0, 1.0) * XMMatrixTranslation(0.0f, -10.0f, 0.0);
 
 		result = m_Terrain->RenderCell(m_D3D->GetDeviceContext(), i);
 		if (!result)
@@ -468,7 +467,7 @@ bool ApplicationClass::RenderSceneToQaud()
 	m_Light->GetProjectionMatrix(lightProjectionMatrix);
 
 	//Render model object
-	worldMatrix = (XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(50.0f, -10.0f, 50.0f));
+	worldMatrix = (XMMatrixScaling(5.0f, 5.0f, 5.0f) * XMMatrixTranslation(50.0f, 0.0f, 50.0f));
 
 	m_Model->Render(m_D3D->GetDeviceContext());
 
@@ -486,15 +485,16 @@ bool ApplicationClass::RenderSceneToQaud()
 
 	cameraPosition = m_Camera->GetPosition();
 
-	particlePosition.x = 0.0f;
-	particlePosition.y = 1.5f;
-	particlePosition.z = 0.0f;
+	//Set the position of the particles
+	particlePosition.x = 100.0f;
+	particlePosition.y = 1.0f;
+	particlePosition.z = 50.0f;
 
-	angle = atan2(particlePosition.x - cameraPosition.x, particlePosition.z - cameraPosition.z) * (180.0 / XM_PI);
+	angle = atan2(particlePosition.x - cameraPosition.x, particlePosition.z - cameraPosition.z);
 
-	rotation = (float)angle * 0.0174532925f;
+	//rotation = (float)angle * 0.0174532925f;
 
-	worldMatrix = (XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixRotationY(rotation) * XMMatrixTranslation(particlePosition.x, particlePosition.y, particlePosition.z));
+	worldMatrix = (XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixRotationY(angle) * XMMatrixTranslation(particlePosition.x, particlePosition.y, particlePosition.z));
 
 	m_ParticleSystem->Render(m_D3D->GetDeviceContext());
 

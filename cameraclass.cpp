@@ -24,7 +24,7 @@ CameraClass::~CameraClass()
 void CameraClass::Initialize(int screenWidth, int screenHeight, float screenNear, float screenDepth)
 {
 	//Set the initial position of the camera
-	SetPosition(0.0f, 1.0f, -5.0f);
+	SetPosition(0.0f, 0.0f, -5.0f);
 
 	Render();
 

@@ -3,17 +3,17 @@
 bool ParticleSystemClass::InitializeParticleSystem()
 {
 	m_particleDeviationX = 5.0f;
-	m_particleDeviationY = 10.0f;
+	m_particleDeviationY = 5.0f;
 	m_particleDeviationZ = 5.0f;
 
 	m_particleVelocity = 1.0f;
 	m_particleVelocityVariation = 0.2f;
 
-	m_particleSize = 1.0f;
+	m_particleSize = 0.5f;
 
 	m_particlesPerSecond = 250.0f;
 
-	m_maxParticles = 10;
+	m_maxParticles = 100;
 
 	m_particleList = new ParticleType[m_maxParticles];
 	if (!m_particleList)
@@ -141,6 +141,7 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 
 	emitParticle = false;
 
+	//Check to see if a new particle should be added or not
 	if (m_accumulatedTime > (1000.0f / m_particlesPerSecond))
 	{
 		m_accumulatedTime = 0.0f;
@@ -161,6 +162,7 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 		green = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
 		blue = (((float)rand() - (float)rand()) / RAND_MAX) + 0.5f;
 
+		//For blending purposes the particle array have to be sorted using the depth, so this will find where in the list the particle should be inserted
 		index = 0;
 		found = false;
 		while (!found)
@@ -175,6 +177,7 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 			}
 		}
 
+		//Copy the array over by one position from the index to make room for new particle
 		i = m_currentParticleCount;
 		j = i - 1;
 
@@ -192,6 +195,7 @@ void ParticleSystemClass::EmitParticles(float frameTime)
 			j--;
 		}
 
+		//Insert into the correct depth order
 		m_particleList[index].positionX = positionX;
 		m_particleList[index].positionY = positionY;
 		m_particleList[index].positionz = positionZ;
@@ -215,6 +219,7 @@ void ParticleSystemClass::UpdateParticles(float frameTime)
 
 void ParticleSystemClass::KillParticles()
 {
+	//Kills any partticle that has dropped below the given height range from their original position
 	for (int i = 0; i < m_maxParticles; i++)
 	{
 		if ((m_particleList[i].active == true) && (m_particleList[i].positionY < -3.0f))
@@ -251,37 +256,37 @@ bool ParticleSystemClass::UpdateBuffers(ID3D11DeviceContext* deviceContext)
 
 	for (int i = 0; i < m_currentParticleCount; i++)
 	{
-		// Bottom left.
+		//Bottom left.
 		m_vertices[index].position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionz);
 		m_vertices[index].texture = XMFLOAT2(0.0f, 1.0f);
 		m_vertices[index].color = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 		index++;
 
-		// Top left.
+		//Top left.
 		m_vertices[index].position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionz);
 		m_vertices[index].texture = XMFLOAT2(0.0f, 0.0f);
 		m_vertices[index].color = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 		index++;
 
-		// Bottom right.
+		//Bottom right.
 		m_vertices[index].position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionz);
 		m_vertices[index].texture = XMFLOAT2(1.0f, 1.0f);
 		m_vertices[index].color = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 		index++;
 
-		// Bottom right.
+		//Bottom right.
 		m_vertices[index].position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionz);
 		m_vertices[index].texture = XMFLOAT2(1.0f, 1.0f);
 		m_vertices[index].color = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 		index++;
 
-		// Top left.
+		//Top left.
 		m_vertices[index].position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionz);
 		m_vertices[index].texture = XMFLOAT2(0.0f, 0.0f);
 		m_vertices[index].color = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
 		index++;
 
-		// Top right.
+		//Top right.
 		m_vertices[index].position = XMFLOAT3(m_particleList[i].positionX + m_particleSize, m_particleList[i].positionY + m_particleSize, m_particleList[i].positionz);
 		m_vertices[index].texture = XMFLOAT2(1.0f, 0.0f);
 		m_vertices[index].color = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
@@ -372,10 +377,13 @@ bool ParticleSystemClass::Frame(float frameTime, ID3D11DeviceContext* deviceCont
 {
 	bool result;
 
+	//Check if any particles need killing
 	KillParticles();
 
+	//Check if need to add particle
 	EmitParticles(frameTime);
 
+	//Update movement
 	UpdateParticles(frameTime);
 
 	result = UpdateBuffers(deviceContext);
