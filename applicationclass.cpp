@@ -424,7 +424,7 @@ bool ApplicationClass::RenderSceneToQaud()
 	bool result;
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix;
 	XMFLOAT3 cameraPosition, particlePosition;
-	double angle;
+	float angley, anglex, anglez;
 
 	//Set the render buffers to be the render target
 	m_DeferredBuffers->SetRenderTarget(m_D3D->GetDeviceContext());
@@ -451,7 +451,7 @@ bool ApplicationClass::RenderSceneToQaud()
 		}
 
 		result = m_DeferredShader->Render(m_D3D->GetDeviceContext(), m_Terrain->GetCellIndexCount(i), worldMatrix, viewMatrix, projectionMatrix,
-			m_TextureManager->GetTexture(0), m_TextureManager->GetTexture(1), lightViewMatrix, lightProjectionMatrix);
+			m_TextureManager->GetTexture(0), m_TextureManager->GetTexture(1), lightViewMatrix, lightProjectionMatrix, m_Camera->GetPosition());
 		if (!result)
 		{
 			return false;
@@ -472,7 +472,7 @@ bool ApplicationClass::RenderSceneToQaud()
 	m_Model->Render(m_D3D->GetDeviceContext());
 
 	result = m_DeferredShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-		m_TextureManager->GetTexture(2), m_TextureManager->GetTexture(3), lightViewMatrix, lightProjectionMatrix);
+		m_TextureManager->GetTexture(2), m_TextureManager->GetTexture(3), lightViewMatrix, lightProjectionMatrix, m_Camera->GetPosition());
 	if (!result)
 	{
 		return false;
@@ -490,11 +490,10 @@ bool ApplicationClass::RenderSceneToQaud()
 	particlePosition.y = 1.0f;
 	particlePosition.z = 50.0f;
 
-	angle = atan2(particlePosition.x - cameraPosition.x, particlePosition.z - cameraPosition.z);
+	angley = atan2(particlePosition.x - cameraPosition.x, particlePosition.z - cameraPosition.z);
+	anglex = atan2(particlePosition.y - cameraPosition.y, particlePosition.z - cameraPosition.z);
 
-	//rotation = (float)angle * 0.0174532925f;
-
-	worldMatrix = (XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixRotationY(angle) * XMMatrixTranslation(particlePosition.x, particlePosition.y, particlePosition.z));
+	worldMatrix = (XMMatrixScaling(2.0f, 2.0f, 2.0f) * XMMatrixRotationRollPitchYaw(-anglex, angley, 0.0f) * XMMatrixTranslation(particlePosition.x, particlePosition.y, particlePosition.z));
 
 	m_ParticleSystem->Render(m_D3D->GetDeviceContext());
 

@@ -10,6 +10,7 @@ bool DeferredShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 	unsigned int numElements;
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
+	D3D11_BUFFER_DESC cameraBufferDesc;
 
 	//Initialize the pointers this function will use to null
 	errorMessage = nullptr;
@@ -165,6 +166,21 @@ bool DeferredShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHA
 		return false;
 	}
 
+	// Setup the description of the camera dynamic constant buffer that is in the vertex shader.
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	// Create the camera constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	result = device->CreateBuffer(&cameraBufferDesc, NULL, &m_cameraBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	return true;
 
 }
@@ -176,6 +192,12 @@ void DeferredShaderClass::ShutdownShader()
 	{
 		m_matrixBuffer->Release();
 		m_matrixBuffer = nullptr;
+	}
+
+	if (m_cameraBuffer)
+	{
+		m_cameraBuffer->Release();
+		m_cameraBuffer = nullptr;
 	}
 
 	if (m_sampleStateWrap)
@@ -245,12 +267,13 @@ void DeferredShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWN
 }
 
 bool DeferredShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, 
-	XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalTexture, XMMATRIX& lightViewMatrix, XMMATRIX& lightProjectionMatrix)
+	XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, ID3D11ShaderResourceView* normalTexture, XMMATRIX& lightViewMatrix, XMMATRIX& lightProjectionMatrix, XMFLOAT3 cameraPosition)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 	MatrixBufferType* dataptr;
+	CameraBufferType* dataptr1;
 
 	//Transpose the matrices to prepare them for the shader
 	worldMatrix = XMMatrixTranspose(worldMatrix);
@@ -285,6 +308,25 @@ bool DeferredShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext
 	//Now set the constant buffer in the vertex shader
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
+	// Lock the camera constant buffer so it can be written to.
+	result = deviceContext->Map(m_cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Get a pointer to the data in the constant buffer.
+	dataptr1 = (CameraBufferType*)mappedResource.pData;
+
+	// Copy the camera position into the constant buffer.
+	dataptr1->cameraPosition = cameraPosition;
+	dataptr1->padding = 0.0f;
+
+	// Unlock the camera constant buffer.
+	deviceContext->Unmap(m_cameraBuffer, 0);
+
+	deviceContext->GSSetConstantBuffers(bufferNumber, 1, &m_cameraBuffer);
+
 	//Set the shader texture resource in the pixel shader
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 	deviceContext->PSSetShaderResources(1, 1, &normalTexture);
@@ -318,6 +360,7 @@ DeferredShaderClass::DeferredShaderClass()
 	m_layout = nullptr;
 	m_sampleStateWrap = nullptr;
 	m_matrixBuffer = nullptr;
+	m_cameraBuffer = nullptr;
 	m_geometryShader = nullptr;
 }
 
@@ -354,12 +397,12 @@ void DeferredShaderClass::Shutdown()
 
 bool DeferredShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, 
 	XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture, 
-	ID3D11ShaderResourceView* normalTexture, XMMATRIX& lightViewMatrix, XMMATRIX& lightProjectionMatrix)
+	ID3D11ShaderResourceView* normalTexture, XMMATRIX& lightViewMatrix, XMMATRIX& lightProjectionMatrix, XMFLOAT3 cameraPosition)
 {
 	bool result;
 
 	//Set the shaderr parameters that will use for rendering
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, normalTexture, lightViewMatrix, lightProjectionMatrix);
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, normalTexture, lightViewMatrix, lightProjectionMatrix, cameraPosition);
 	if (!result)
 	{
 		return false;

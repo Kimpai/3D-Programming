@@ -1,3 +1,9 @@
+cbuffer CameraBuffer
+{
+	float3 cameraPosition;
+	float padding;
+};
+
 struct GeometryInputType
 {
 	float4 position:SV_POSITION;
@@ -28,14 +34,21 @@ void DGS ( triangle GeometryInputType input[3], inout TriangleStream<PixelInputT
     PixelInputType output;
 	float3 edge1, edge2;
 	float3 faceNormal;
+	float3 viewDirection;
+	float temp;
 
-	edge1 = input[1].position.xyz - input[0].position.xyz;
-	edge2 = input[2].position.xyz - input[0].position.xyz;
+	edge1 = input[1].worldPosition.xyz - input[0].worldPosition.xyz;
+	edge2 = input[2].worldPosition.xyz - input[0].worldPosition.xyz;
 
 	faceNormal = cross(edge1, edge2);
-	faceNormal = normalize(faceNormal); 
+	faceNormal = normalize(faceNormal);
+	
+	viewDirection = input[0].worldPosition.xyz - cameraPosition;
+	viewDirection = normalize(viewDirection);
 
-    for( uint i = 0; i < 3; i++ )
+	temp = dot(viewDirection, faceNormal);
+
+    for(int i = 0; i < 3; i++ )
     {
 		output.position = input[i].position;
 		output.tex = input[i].tex;
@@ -46,12 +59,11 @@ void DGS ( triangle GeometryInputType input[3], inout TriangleStream<PixelInputT
 		output.worldPosition = input[i].worldPosition;
 		output.lightViewPosition = input[i].lightViewPosition;
 
-		if (faceNormal.z < 0.0f || faceNormal.y > 0.0f)
+		if (temp < 0.0f)
 		{
-
-			OutputStream.Append( output );
+			OutputStream.Append(output);
 		}
     }
-	
-    OutputStream.RestartStrip();
+
+	OutputStream.RestartStrip();
 }

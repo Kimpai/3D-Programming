@@ -260,6 +260,7 @@ bool ParticleSystemClass::UpdateBuffers(ID3D11DeviceContext* deviceContext)
 		m_vertices[index].position = XMFLOAT3(m_particleList[i].positionX - m_particleSize, m_particleList[i].positionY - m_particleSize, m_particleList[i].positionz);
 		m_vertices[index].texture = XMFLOAT2(0.0f, 1.0f);
 		m_vertices[index].color = XMFLOAT4(m_particleList[i].red, m_particleList[i].green, m_particleList[i].blue, 1.0f);
+		
 		index++;
 
 		//Top left.

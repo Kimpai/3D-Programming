@@ -216,8 +216,7 @@ bool ModelClass::LoadModel(char* filename)
 		return false;
 	}
 
-	//Read in the vertices, texture coordinates, and normals into the data structures.
-	//Important: Also convert to left hand coordinate system since Maya uses right hand coordinate system.
+	//Read in the vertices, texture coordinates, and normals. And convert to left hand coordinate system since Maya uses right hand coordinate system.
 	fin.get(input);
 	while (!fin.eof())
 	{

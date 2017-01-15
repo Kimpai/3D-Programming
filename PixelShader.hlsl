@@ -93,7 +93,7 @@ float4 PS (PixelInputType input):SV_TARGET
 	diffuse = diffuseFactor * diffuseColor * color;
 
 	//Specular
-	reflection = reflect(normal.xyz, lightDir);
+	reflection = reflect(normal.xyz, -lightDir);
 	specularFactor = pow(saturate(dot(reflection, viewDir)), 32.0f);
 
 	specular = specularFactor * specularColor * color; 

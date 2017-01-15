@@ -23,6 +23,7 @@ private:
 		XMFLOAT3 position;
 		XMFLOAT2 texture;
 		XMFLOAT4 color;
+		XMFLOAT3 normal;
 	};
 
 	bool InitializeParticleSystem();
